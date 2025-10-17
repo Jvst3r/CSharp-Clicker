@@ -1,24 +1,28 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Сsharp_Clicker.Domain;
-namespace Сsharp_Clicker.Infastructure.Implementations
+﻿using CSharpClicker.Domain;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace CSharpClicker.Infrastructure.Implementations;
+
+public class AppDbContext : IdentityDbContext
 {
-    public class AppDbContext : DbContext
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+    }
 
-            modelBuilder.Entity<UserBoosts>()
-                .HasMany(u => u.UserBoosts)
-                .WithOne()
-                .HasForeignKey(ub => ub.BoostId);
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<UserBoost>()
+            .HasOne(ub => ub.User)
+            .WithMany(u => u.UserBoosts)
+            .HasForeignKey(ub => ub.UserId);
+        modelBuilder.Entity<UserBoost>()
+            .HasOne(ub => ub.Boost)
+            .WithMany(u => u.UserBoosts)
+            .HasForeignKey(ub => ub.BoostId);
+        modelBuilder.Entity<UserBoost>()
+            .HasKey(ub => new { ub.UserId, ub.BoostId });
 
-            modelBuilder.Entity<Boost>()
-                .HasMany(b => b.UserBoosts)
-                .WithOne()
-                .HasForeignKey(ub => ub.BoostId)
-
-
-            base.OnModelCreating(modelBuilder);
-        }
+        base.OnModelCreating(modelBuilder);
     }
 }

@@ -1,25 +1,30 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Сsharp_Clicker.Infastructure.Implementations;
+﻿using CSharpClicker.Infrastructure.Implementations;
+using Microsoft.EntityFrameworkCore;
+using SQLitePCL;
 
-namespace Сsharp_Clicker.Infrastructure.Initialization
+namespace CSharpClicker.Intitialization;
+
+public static class DbContextInitializer
 {
-    public static class DbContextInitializer
+    public static void InitializeDbContext(IServiceCollection services)
     {
-        public static void InitializeDbContext(IServiceCollection services)
-        =>
-            services.AddDbContext<AppDbContext>(o => o.UseSqlite($"Data Source="));
-        
+        var dbFilePath = GetPathToDatabaseFile();
 
-        public static void InitializeDataBase(AppDbContext db)
-        {
+        services.AddDbContext<AppDbContext>(o => o.UseSqlite($"Data Source={dbFilePath}"));
+    }
 
-        }
+    public static void InitializeDataBase(AppDbContext dbContext)
+    {
+        dbContext.Database.Migrate();
+    }
 
-        public static string GetPathToDatabaseFile()
-        {
-            var pathToApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+    public static string GetPathToDatabaseFile()
+    {
+        var pathToLocalApplicationData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        Directory.CreateDirectory(Path.Combine(pathToLocalApplicationData, "CSharpClicker"));
 
-            var dbFilePath = Path.Combine(pathToLocalApplicationData, "CSharp")
-        }
+        var dbFilePath = Path.Combine(pathToLocalApplicationData, "CSharpClicker", "CSharpClicker.db");
+
+        return dbFilePath;
     }
 }

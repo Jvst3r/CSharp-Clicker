@@ -10,6 +10,6 @@ using (var scope = app.Services.CreateScope())
     var appDbContext = scope .ServiceProvider
 }
 
-app.MapGet("/", () => "Hello World!");
+app.MapGet("/", () => "Hello World!");  
 
 app.Run();
